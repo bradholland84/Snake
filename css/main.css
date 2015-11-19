@@ -1,0 +1,13 @@
+html, body {
+    padding: 1em;
+    margin: 0;
+}
+
+body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 18px;
+}
+
+#game-canvas {
+    border: 1px solid #333;
+}
