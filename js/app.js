@@ -1,4 +1,4 @@
-Document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     'use strict';
     //either WebGL or Canvas renderer, depending on support
     var r = PIXI.autoDetectRenderer(500, 500);
