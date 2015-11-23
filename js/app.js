@@ -10,19 +10,20 @@ document.addEventListener('DOMContentLoaded', function() {
     //Creates main stage for display objects
     var stage = new PIXI.Container();
 
+    var timer = 0;
+
     //holds 2-dimensional array of sprites
     var map = {};
 
-    //length of snake AKA number of history states
-    var snakeLength;
+    //snake array containing tile points
+    var snake = [
+        {
+            x: 10,
+            y: 10
+        }
+    ];
 
-    //position of the snake head AKA active square
-    var snakeHead = {
-        x: 10,
-        y: 10
-    };
-
-    //position of fruit 
+    //position of fruit
     var fruit = {
         x: 5,
         y: 5
@@ -32,21 +33,18 @@ document.addEventListener('DOMContentLoaded', function() {
     PIXI.loader
         .add('img/square.png')
         .add('img/sprite.png')
-        .add('img/apple.png')
         .load(setupSprites);
 
+    //makes random point on the map
     var firstPoint = new PIXI.Point(
-        Math.random() * stage.width,
-        Math.random() * stage.height
+        getRandomIntInclusive(0, 19),
+        getRandomIntInclusive(0, 19)
     );
 
     //main sprite objects
     var state;
     var sprite;
-    var apple;
     function setupSprites() {
-        sprite = new PIXI.Sprite(PIXI.loader.resources['img/sprite.png'].texture);
-        apple = new PIXI.Sprite(PIXI.loader.resources['img/apple.png'].texture);
 
 
         map.tileSprites = [];
@@ -96,11 +94,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //sets up the game with sprite positions
     function setupGame(stage) {
+        sprite = new PIXI.Sprite(PIXI.loader.resources['img/sprite.png'].texture);
         sprite.anchor.x = 0.5;
         sprite.anchor.y = 0.5;
-
-        apple.anchor.x = 0.5;
-        apple.anchor.y = 0.5;
 
         sprite.vx = 0;
         sprite.vy = 0;
@@ -108,11 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
         sprite.position.x = r.width / 2;
         sprite.position.y = r.height / 2;
 
-        apple.position.x = Math.random() * r.height;
-        apple.position.y = Math.random() * r.width;
-
         stage.addChild(sprite);
-        stage.addChild(apple);
 
         var left = keyboard(37),
             up = keyboard(38),
@@ -123,8 +115,8 @@ document.addEventListener('DOMContentLoaded', function() {
         //Left arrow key `press` method
         left.press = function() {
 
-            //Change the cat's velocity when the key is pressed
-            sprite.vx = -5;
+            //Change the sprite's velocity when the key is pressed
+            sprite.vx = -20;
             sprite.vy = 0;
         };
 
@@ -132,8 +124,8 @@ document.addEventListener('DOMContentLoaded', function() {
         left.release = function() {
 
             //If the left arrow has been released, and the right arrow isn't down,
-            //and the cat isn't moving vertically:
-            //Stop the cat
+            //and the sprite isn't moving vertically:
+            //Stop the sprite
             if (!right.isDown && sprite.vy === 0) {
                 sprite.vx = 0;
             }
@@ -141,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         //Up
         up.press = function() {
-            sprite.vy = -5;
+            sprite.vy = -20;
             sprite.vx = 0;
         };
         up.release = function() {
@@ -152,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         //Right
         right.press = function() {
-            sprite.vx = 5;
+            sprite.vx = 20;
             sprite.vy = 0;
         };
         right.release = function() {
@@ -163,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         //Down
         down.press = function() {
-            sprite.vy = 5;
+            sprite.vy = 20;
             sprite.vx = 0;
         };
         down.release = function() {
@@ -266,8 +258,24 @@ document.addEventListener('DOMContentLoaded', function() {
         return hit;
     }
     function play() {
-        sprite.x += sprite.vx;
-        sprite.y += sprite.vy;
+        if (timer > 30) {
+            //move the sprite based on velocity
+            sprite.x += sprite.vx;
+            sprite.y += sprite.vy;
+            timer = 0;
+        } else {
+            timer ++;
+        }
+
+        var apple = map.tileSprites[firstPoint.x][firstPoint.y]
+
+        //tint the apple
+        apple.tint =  0xffff1a;
+
+        //tint the snake segments
+        snake.forEach(function(segment) {
+           map.tileSprites[segment.x][segment.y].tint = 0xff00ff
+        });
 
         if (hitTestRectangle(sprite, apple)) {
             r.backgroundColor =  0xff3300;
@@ -286,5 +294,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Render our container
         r.render(stage);
+    }
+
+    // Returns a random integer between min (included) and max (included)
+    function getRandomIntInclusive(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 });
