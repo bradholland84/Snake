@@ -285,8 +285,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-
-
     function animate() {
         requestAnimationFrame(animate);
 
@@ -294,6 +292,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Render our container
         r.render(stage);
+    }
+
+    //pushes new object to head of snake
+    function newSnakehead(){
+       // map.tileSprites UNSHIFT(obj)
     }
 
     // Returns a random integer between min (included) and max (included)
