@@ -1,20 +1,100 @@
 document.addEventListener('DOMContentLoaded', function() {
     'use strict';
     //either WebGL or Canvas renderer, depending on support
-    var r = PIXI.autoDetectRenderer(500, 500);
-    r.backgroundColor = 0x3498db;
-
+    var r = PIXI.autoDetectRenderer(400, 400);
+    r.backgroundColor = 0x061639;
 
     //adds canvas to HTML body
     document.body.appendChild(r.view);
 
     //Creates main stage for display objects
     var stage = new PIXI.Container();
+
+    //holds 2-dimensional array of sprites
+    var map = {};
+
+    //length of snake AKA number of history states
+    var snakeLength;
+
+    //position of the snake head AKA active square
+    var snakeHead = {
+        x: 10,
+        y: 10
+    };
+
+    //position of fruit 
+    var fruit = {
+        x: 5,
+        y: 5
+    };
+
+    //put images into texture cache
+    PIXI.loader
+        .add('img/square.png')
+        .add('img/sprite.png')
+        .add('img/apple.png')
+        .load(setupSprites);
+
+    var firstPoint = new PIXI.Point(
+        Math.random() * stage.width,
+        Math.random() * stage.height
+    );
+
     //main sprite objects
     var state;
-    var sprite = new PIXI.Sprite.fromImage('img/sprite.png');
-    var apple = new PIXI.Sprite.fromImage('img/apple.png');
+    var sprite;
+    var apple;
+    function setupSprites() {
+        sprite = new PIXI.Sprite(PIXI.loader.resources['img/sprite.png'].texture);
+        apple = new PIXI.Sprite(PIXI.loader.resources['img/apple.png'].texture);
 
+
+        map.tileSprites = [];
+        var x;
+        var y;
+        var texture = PIXI.loader.resources['img/square.png'].texture;
+        for (x = 0; x < r.width / 20; x ++) {
+            map.tileSprites.push([]);
+            for (y = 0; y < r.height / 20; y ++) {
+                var sq = new PIXI.Sprite(texture);
+                sq.position.x = x * 20;
+                sq.position.y = y * 20;
+                map.tileSprites[x].push(sq);
+                stage.addChild(sq);
+            }
+        }
+
+        console.log(map.tileSprites);
+        //set up game
+        setupGame(stage);
+    }
+
+
+/*
+
+    //vertical lines
+    var x;
+    for (x = 0; x <= r.width; x += 20) {
+        var vline = new PIXI.Graphics();
+        vline.lineStyle(2, 0x33ccff, 1);
+        vline.moveTo(x, 0);
+        vline.lineTo(x, r.height);
+        stage.addChild(vline);
+    }
+
+    // horizontal lines
+    var y;
+    for (y = 0; y <= r.height; y += 20) {
+        var hline = new PIXI.Graphics();
+        hline.lineStyle(2, 0x33ccff, 1);
+        hline.moveTo(0, y);
+        hline.lineTo(r.width, y);
+        stage.addChild(hline);
+    }
+
+ */
+
+    //sets up the game with sprite positions
     function setupGame(stage) {
         sprite.anchor.x = 0.5;
         sprite.anchor.y = 0.5;
@@ -96,6 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
         animate();
     }
 
+    //defines keyboard pressing actions
     function keyboard(keyCode) {
         var key = {};
         key.code = keyCode;
@@ -133,6 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return key;
     }
 
+    //checks to see if the two parameters are touching
     function hitTestRectangle(r1, r2) {
 
         //Define the variables we'll need to calculate
@@ -188,13 +270,14 @@ document.addEventListener('DOMContentLoaded', function() {
         sprite.y += sprite.vy;
 
         if (hitTestRectangle(sprite, apple)) {
-            r.backgroundColor = 0x4598dc;
+            r.backgroundColor =  0xff3300;
+            console.log('hit');
+        } else {
+            r.backgroundColor = 0x061639;
         }
     }
 
 
-    //set up game
-    setupGame(stage);
 
     function animate() {
         requestAnimationFrame(animate);
