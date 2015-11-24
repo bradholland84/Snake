@@ -8,6 +8,8 @@ fall back to Canvas rendering so you only have to code things once.
 Pixi is open source with a flourishing developer community that continually improves the engine.
 
 ##Playing the game
+###[Play the game in your browser here](http://students.washington.edu/bradholl/info343/Snake/)
+
 Snake works best on a desktop or laptop computer that has a keyboard. 
 ###Goal
 Eat the most fruits to grow! Your score increases for every fruit you eat, but so does your snake!
