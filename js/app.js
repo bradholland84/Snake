@@ -10,12 +10,13 @@ document.addEventListener('DOMContentLoaded', function() {
     //Creates main stage for display objects
     var stage = new PIXI.Container();
 
+    //timer that restricts movement speed
     var timer = 0;
 
     //holds 2-dimensional array of sprites
     var map = {};
 
-    //snake array containing tile points
+    //snake array containing tiles, head starts at center
     var snake = [
         {
             x: 10,
@@ -36,16 +37,16 @@ document.addEventListener('DOMContentLoaded', function() {
         .load(setupSprites);
 
     //makes random point on the map
-    var firstPoint = new PIXI.Point(
+    var applePoint = new PIXI.Point(
         getRandomIntInclusive(0, 19),
         getRandomIntInclusive(0, 19)
     );
 
-    //main sprite objects
+    //main game state
     var state;
+    //main sprite objects
     var sprite;
     function setupSprites() {
-
 
         map.tileSprites = [];
         var x;
@@ -68,30 +69,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
-/*
-
-    //vertical lines
-    var x;
-    for (x = 0; x <= r.width; x += 20) {
-        var vline = new PIXI.Graphics();
-        vline.lineStyle(2, 0x33ccff, 1);
-        vline.moveTo(x, 0);
-        vline.lineTo(x, r.height);
-        stage.addChild(vline);
-    }
-
-    // horizontal lines
-    var y;
-    for (y = 0; y <= r.height; y += 20) {
-        var hline = new PIXI.Graphics();
-        hline.lineStyle(2, 0x33ccff, 1);
-        hline.moveTo(0, y);
-        hline.lineTo(r.width, y);
-        stage.addChild(hline);
-    }
-
- */
-
     //sets up the game with sprite positions
     function setupGame(stage) {
         sprite = new PIXI.Sprite(PIXI.loader.resources['img/sprite.png'].texture);
@@ -99,11 +76,12 @@ document.addEventListener('DOMContentLoaded', function() {
         sprite.anchor.y = 0.5;
 
         sprite.vx = 0;
-        sprite.vy = 0;
+        sprite.vy = -20;
 
         sprite.position.x = r.width / 2;
         sprite.position.y = r.height / 2;
 
+        sprite.alpha = 0;
         stage.addChild(sprite);
 
         var left = keyboard(37),
@@ -127,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
             //and the sprite isn't moving vertically:
             //Stop the sprite
             if (!right.isDown && sprite.vy === 0) {
-                sprite.vx = 0;
+                //sprite.vx = 0;
             }
         };
 
@@ -138,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         up.release = function() {
             if (!down.isDown && sprite.vx === 0) {
-                sprite.vy = 0;
+                //sprite.vy = 0;
             }
         };
 
@@ -149,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         right.release = function() {
             if (!left.isDown && sprite.vy === 0) {
-                sprite.vx = 0;
+                //sprite.vx = 0;
             }
         };
 
@@ -160,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         down.release = function() {
             if (!up.isDown && sprite.vx === 0) {
-                sprite.vy = 0;
+                //sprite.vy = 0;
             }
         };
 
@@ -258,33 +236,31 @@ document.addEventListener('DOMContentLoaded', function() {
         return hit;
     }
     function play() {
-        if (timer > 30) {
-            //move the sprite based on velocity
-            sprite.x += sprite.vx;
-            sprite.y += sprite.vy;
+
+        var apple = map.tileSprites[applePoint.x][applePoint.y];
+
+        if (timer > 20) {
+            //update snake segment positions
+            updateSnake(apple);
+            //console.log(snake);
+            //reset the timer to 0
             timer = 0;
         } else {
             timer ++;
         }
 
-        var apple = map.tileSprites[firstPoint.x][firstPoint.y]
-
         //tint the apple
         apple.tint =  0xffff1a;
 
-        //tint the snake segments
-        snake.forEach(function(segment) {
-           map.tileSprites[segment.x][segment.y].tint = 0xff00ff
-        });
 
-        if (hitTestRectangle(sprite, apple)) {
-            r.backgroundColor =  0xff3300;
-            console.log('hit');
-        } else {
-            r.backgroundColor = 0x061639;
-        }
     }
 
+    function stop() {
+        var text = new PIXI.Text("Game Over", {font:"50px Arial", fill: "red"});
+        stage.addChild(text);
+    }
+
+    //animation loop
     function animate() {
         requestAnimationFrame(animate);
 
@@ -294,10 +270,58 @@ document.addEventListener('DOMContentLoaded', function() {
         r.render(stage);
     }
 
-    //pushes new object to head of snake
-    function newSnakehead(){
-       // map.tileSprites UNSHIFT(obj)
+    function updateSnake(apple) {
+
+
+        if (snake[0].x * 20 > r.width ||
+            snake[0].y * 20 > r.height ||
+            snake[0].x * 20 < 0 ||
+            snake[0].y * 20 < 0) {
+            state = stop;
+        } else {
+            // create a new object representing the snake head
+            var newHead = {
+                x: snake[0].x + sprite.vx / 20,
+                y: snake[0].y + sprite.vy / 20
+            };
+
+            snake.unshift(newHead);
+            map.tileSprites[newHead.x][newHead.y].tint = 0xff00ff;
+
+            //check to see if the snake ate an apple, if so: keep the last segment
+            if (hitTestRectangle(map.tileSprites[newHead.x][newHead.y], apple)) {
+                console.log('hit');
+                console.log("length of snake is now: " + snake.length);
+                newApple();
+            } else {
+                var lastSegment = snake.pop();
+                //remove tint of the last segment
+                map.tileSprites[lastSegment.x][lastSegment.y].tint = 0xFFFFFF;
+                //snake did not eat an apple.
+
+            }
+
+            //tint the snake segments
+            snake.forEach(function(segment) {
+                map.tileSprites[segment.x][segment.y].tint = 0xff00ff;
+            });
+
+        }
+
+
+
     }
+
+    function newApple() {
+        map.tileSprites[applePoint.x][applePoint.y].tint = 0xFFFFFF;
+        map.tileSprites[applePoint.x][applePoint.y].tint = 0xff00ff;
+
+        applePoint = new PIXI.Point(
+            getRandomIntInclusive(0, 19),
+            getRandomIntInclusive(0, 19)
+        );
+    }
+
 
     // Returns a random integer between min (included) and max (included)
     function getRandomIntInclusive(min, max) {
