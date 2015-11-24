@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //sets up the game with sprite positions
     function setupGame(stage) {
+        document.getElementById('score').innerHTML = "" + (snake.length - 1);
         sprite = new PIXI.Sprite();
         sprite.anchor.x = 0.5;
         sprite.anchor.y = 0.5;
@@ -275,8 +276,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             //check to see if the snake ate an apple, if so: keep the last segment
             if (hitTestRectangle(map.tileSprites[newHead.x][newHead.y], apple)) {
-                console.log('hit');
-                console.log("length of snake is now: " + snake.length);
+                document.getElementById('score').innerHTML = "" + (snake.length - 1);
                 newApple();
             } else {
                 var lastSegment = snake.pop();
