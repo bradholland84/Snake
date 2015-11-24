@@ -44,10 +44,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //main game state
     var state;
-    //main sprite objects
+    //main sprite object that serves as player pointer
     var sprite;
     function setupSprites() {
-
+        //adds tile sprites to stage
         map.tileSprites = [];
         var x;
         var y;
@@ -63,7 +63,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        console.log(map.tileSprites);
         //set up game
         setupGame(stage);
     }
@@ -235,26 +234,24 @@ document.addEventListener('DOMContentLoaded', function() {
         //`hit` will be either `true` or `false`
         return hit;
     }
+
+    //main game logic
     function play() {
-
         var apple = map.tileSprites[applePoint.x][applePoint.y];
+        apple.tint =  0xffff1a;
 
-        if (timer > 20) {
+        if (timer > 15) {
             //update snake segment positions
             updateSnake(apple);
-            //console.log(snake);
+
             //reset the timer to 0
             timer = 0;
         } else {
             timer ++;
         }
-
-        //tint the apple
-        apple.tint =  0xffff1a;
-
-
     }
 
+    //player lost the game, stops play
     function stop() {
         var text = new PIXI.Text("Game Over", {font:"50px Arial", fill: "red"});
         stage.addChild(text);
@@ -263,28 +260,29 @@ document.addEventListener('DOMContentLoaded', function() {
     //animation loop
     function animate() {
         requestAnimationFrame(animate);
-
         state();
-
         // Render our container
         r.render(stage);
     }
 
+    //updates snake on screen
     function updateSnake(apple) {
+        // create a new object representing the snake head
+        var newHead = {
+            x: snake[0].x + sprite.vx / 20,
+            y: snake[0].y + sprite.vy / 20
+        };
 
+        // Make sure the snake doesn't try to eat itself
+        ateSelf(newHead);
 
         if (snake[0].x * 20 > r.width ||
             snake[0].y * 20 > r.height ||
             snake[0].x * 20 < 0 ||
             snake[0].y * 20 < 0) {
+            // player went out of bounds or they tried to eat themselves
             state = stop;
         } else {
-            // create a new object representing the snake head
-            var newHead = {
-                x: snake[0].x + sprite.vx / 20,
-                y: snake[0].y + sprite.vy / 20
-            };
-
             snake.unshift(newHead);
             map.tileSprites[newHead.x][newHead.y].tint = 0xff00ff;
 
@@ -297,21 +295,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 var lastSegment = snake.pop();
                 //remove tint of the last segment
                 map.tileSprites[lastSegment.x][lastSegment.y].tint = 0xFFFFFF;
-                //snake did not eat an apple.
-
             }
 
             //tint the snake segments
             snake.forEach(function(segment) {
                 map.tileSprites[segment.x][segment.y].tint = 0xff00ff;
             });
-
         }
-
-
-
     }
 
+    //generates new apple in random position
     function newApple() {
         map.tileSprites[applePoint.x][applePoint.y].tint = 0xFFFFFF;
         map.tileSprites[applePoint.x][applePoint.y].tint = 0xff00ff;
@@ -322,6 +315,15 @@ document.addEventListener('DOMContentLoaded', function() {
         );
     }
 
+    function ateSelf(head) {
+        snake.forEach(function(segment) {
+           if (head.x == segment.x && head.y == segment.y) {
+               state = stop;
+               return true;
+           }
+        });
+        return false;
+    }
 
     // Returns a random integer between min (included) and max (included)
     function getRandomIntInclusive(min, max) {
