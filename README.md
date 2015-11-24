@@ -17,9 +17,9 @@ Your snake must stay within the bounds of the screen.
 You cannot run into your other body segments. Trying to eat yourself will lose the game.
 
 ###Controls
-Arrow keys to change direction
-Enter to start the game / restart with increased difficulty
-R to reload the game starting from the easiest difficulty
+Arrow keys to change direction  
+Enter to start the game / restart with increased difficulty  
+R to reload the game starting from the easiest difficulty  
 
 ##Resources
 - [Official Pixi.js Documentation] (http://pixijs.github.io/docs/)
