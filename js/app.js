@@ -11,24 +11,13 @@ document.addEventListener('DOMContentLoaded', function() {
     var stage = new PIXI.Container();
 
     //timer that restricts movement speed
-    var timer = 0;
+    var timer;
 
     //holds 2-dimensional array of sprites
     var map = {};
 
     //snake array containing tiles, head starts at center
-    var snake = [
-        {
-            x: 10,
-            y: 10
-        }
-    ];
-
-    //position of fruit
-    var fruit = {
-        x: 5,
-        y: 5
-    };
+    var snake = [];
 
     //put images into texture cache
     PIXI.loader
@@ -43,11 +32,13 @@ document.addEventListener('DOMContentLoaded', function() {
     );
 
     //main game state
-    var state;
+    var state = begin;
     //main sprite object that serves as player pointer
     var sprite;
     function setupSprites() {
         //adds tile sprites to stage
+        timer = 0;
+        snake = [{x: 10, y: 10}];
         map.tileSprites = [];
         var x;
         var y;
@@ -86,8 +77,8 @@ document.addEventListener('DOMContentLoaded', function() {
         var left = keyboard(37),
             up = keyboard(38),
             right = keyboard(39),
-            down = keyboard(40);
-
+            down = keyboard(40),
+            enter = keyboard(13);
 
         //Left arrow key `press` method
         left.press = function() {
@@ -97,26 +88,10 @@ document.addEventListener('DOMContentLoaded', function() {
             sprite.vy = 0;
         };
 
-        //Left arrow key `release` method
-        left.release = function() {
-
-            //If the left arrow has been released, and the right arrow isn't down,
-            //and the sprite isn't moving vertically:
-            //Stop the sprite
-            if (!right.isDown && sprite.vy === 0) {
-                //sprite.vx = 0;
-            }
-        };
-
         //Up
         up.press = function() {
             sprite.vy = -20;
             sprite.vx = 0;
-        };
-        up.release = function() {
-            if (!down.isDown && sprite.vx === 0) {
-                //sprite.vy = 0;
-            }
         };
 
         //Right
@@ -124,24 +99,21 @@ document.addEventListener('DOMContentLoaded', function() {
             sprite.vx = 20;
             sprite.vy = 0;
         };
-        right.release = function() {
-            if (!left.isDown && sprite.vy === 0) {
-                //sprite.vx = 0;
-            }
-        };
 
         //Down
         down.press = function() {
             sprite.vy = 20;
             sprite.vx = 0;
         };
-        down.release = function() {
-            if (!up.isDown && sprite.vx === 0) {
-                //sprite.vy = 0;
+
+        //enter
+        enter.press = function() {
+            if (state == begin || state == lose) {
+                state = play;
+                setupSprites();
             }
         };
 
-        state = play;
         animate();
     }
 
@@ -252,8 +224,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     //player lost the game, stops play
-    function stop() {
-        var text = new PIXI.Text("Game Over", {font:"50px Arial", fill: "red"});
+    function lose() {
+        var text = new PIXI.Text("Game Over! \n Press Enter to restart", {font:"30px Arial", fill: "red", align: 'center'});
+        stage.addChild(text);
+    }
+
+    //wait for player to begin game
+    function begin() {
+        var text = new PIXI.Text("Press Enter to Begin", {font:"30px Arial", fill: "white"});
         stage.addChild(text);
     }
 
@@ -281,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
             snake[0].x * 20 < 0 ||
             snake[0].y * 20 < 0) {
             // player went out of bounds or they tried to eat themselves
-            state = stop;
+            state = lose;
         } else {
             snake.unshift(newHead);
             map.tileSprites[newHead.x][newHead.y].tint = 0xff00ff;
@@ -313,12 +291,19 @@ document.addEventListener('DOMContentLoaded', function() {
             getRandomIntInclusive(0, 19),
             getRandomIntInclusive(0, 19)
         );
+
+        // If the apple is going to be inside a space occupied by the snake, try again
+        snake.forEach(function(segment) {
+            if (applePoint.x == segment.x && applePoint.y == segment.y) {
+                newApple();
+            }
+        });
     }
 
     function ateSelf(head) {
         snake.forEach(function(segment) {
            if (head.x == segment.x && head.y == segment.y) {
-               state = stop;
+               state = lose;
                return true;
            }
         });
