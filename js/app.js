@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //main game state
     var state = begin;
+
     //main sprite object that serves as player pointer
     var sprite;
     function setupSprites() {
@@ -57,7 +58,6 @@ document.addEventListener('DOMContentLoaded', function() {
         setupGame(stage);
     }
 
-
     //sets up the game with sprite positions
     function setupGame(stage) {
         document.getElementById('score').innerHTML = "" + (snake.length - 1);
@@ -71,6 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
         sprite.position.x = r.width / 2;
         sprite.position.y = r.height / 2;
 
+        // player-controlled pointer is invisible
         sprite.alpha = 0;
         stage.addChild(sprite);
 
@@ -83,7 +84,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         //Left arrow key `press` method
         left.press = function() {
-
             //Change the sprite's velocity when the key is pressed
             sprite.vx = -20;
             sprite.vy = 0;
@@ -120,6 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         };
 
+        //begin main animation loop
         animate();
     }
 
@@ -161,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return key;
     }
 
-    //checks to see if the two parameters are touching
+    //checks to see if the two sprite parameters are touching
     function hitTestRectangle(r1, r2) {
 
         //Define the variables we'll need to calculate
@@ -215,9 +216,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //main game logic
     function play() {
+        //make the apple a different color
         var apple = map.tileSprites[applePoint.x][applePoint.y];
         apple.tint =  0xffff1a;
 
+        // Restrict game speed
         if (timer > 15) {
             //update snake segment positions
             updateSnake(apple);
@@ -241,11 +244,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //wait for player to begin game
     function begin() {
-        var text = new PIXI.Text("Press Enter to Begin", {font:"30px Arial", fill: "white"});
+        var text = new PIXI.Text(" Press Enter to Begin \n Use arrow keys to move", {font:"30px Arial", fill: "white"});
         stage.addChild(text);
     }
 
-    //animation loop
+    //main animation loop
     function animate() {
         requestAnimationFrame(animate);
         state();
@@ -284,14 +287,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 map.tileSprites[lastSegment.x][lastSegment.y].tint = 0xFFFFFF;
             }
 
-            //tint the snake segments
+            //now tint the snake segments
             snake.forEach(function(segment) {
                 map.tileSprites[segment.x][segment.y].tint = 0xff00ff;
             });
         }
     }
 
-    //generates new apple in random position
+    //generates new apple in  random position
     function newApple() {
         map.tileSprites[applePoint.x][applePoint.y].tint = 0xFFFFFF;
         map.tileSprites[applePoint.x][applePoint.y].tint = 0xff00ff;
