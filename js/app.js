@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var stage = new PIXI.Container();
 
     //timer that restricts movement speed
-    var timer;
+    var timer = 0;
 
     //holds 2-dimensional array of sprites
     var map = {};
@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', function() {
     //put images into texture cache
     PIXI.loader
         .add('img/square.png')
-        .add('img/sprite.png')
         .load(setupSprites);
 
     //makes random point on the map
@@ -61,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //sets up the game with sprite positions
     function setupGame(stage) {
-        sprite = new PIXI.Sprite(PIXI.loader.resources['img/sprite.png'].texture);
+        sprite = new PIXI.Sprite();
         sprite.anchor.x = 0.5;
         sprite.anchor.y = 0.5;
 
@@ -78,7 +77,8 @@ document.addEventListener('DOMContentLoaded', function() {
             up = keyboard(38),
             right = keyboard(39),
             down = keyboard(40),
-            enter = keyboard(13);
+            enter = keyboard(13),
+            rkey = keyboard(82);
 
         //Left arrow key `press` method
         left.press = function() {
@@ -104,6 +104,11 @@ document.addEventListener('DOMContentLoaded', function() {
         down.press = function() {
             sprite.vy = 20;
             sprite.vx = 0;
+        };
+
+        //R
+        rkey.press = function() {
+            location.reload();
         };
 
         //enter
@@ -225,7 +230,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //player lost the game, stops play
     function lose() {
-        var text = new PIXI.Text("Game Over! \n Press Enter to restart", {font:"30px Arial", fill: "red", align: 'center'});
+        timer = 0;
+        var text = new PIXI.Text("Game Over! \n Press Enter to increase difficulty \n Press R to restart" , {font:"24px Arial", fill: "red", align: 'center'});
+        for (var i = stage.children.length - 1; i >= 0; i--) {
+            stage.removeChild(stage.children[i]);
+        }
         stage.addChild(text);
     }
 
@@ -300,6 +309,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    //check if the snake is trying to eat itself
     function ateSelf(head) {
         snake.forEach(function(segment) {
            if (head.x == segment.x && head.y == segment.y) {
