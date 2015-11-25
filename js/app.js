@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', function() {
     //holds 2-dimensional array of sprites
     var map = {};
 
+    //Pauses the game
+    var isPaused = true;
+
     //snake array containing tiles, head starts at center
     var snake = [];
 
@@ -36,6 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
     //main sprite object that serves as player pointer
     var sprite;
     function setupSprites() {
+    isPaused = false;
         //adds tile sprites to stage
         timer = 0;
         snake = [{x: 10, y: 10}];
@@ -216,42 +220,50 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //main game logic
     function play() {
-        //make the apple a different color
-        var apple = map.tileSprites[applePoint.x][applePoint.y];
-        apple.tint =  0xffff1a;
+        if (!isPaused) {
+            //make the apple a different color
+            var apple = map.tileSprites[applePoint.x][applePoint.y];
+            apple.tint =  0xffff1a;
 
-        // Restrict game speed
-        if (timer > 15) {
-            //update snake segment positions
-            updateSnake(apple);
+            // Restrict game speed
+            if (timer > 15) {
+                //update snake segment positions
+                updateSnake(apple);
 
-            //reset the timer to 0
-            timer = 0;
-        } else {
-            timer ++;
+                //reset the timer to 0
+                timer = 0;
+            } else {
+                timer ++;
+            }
         }
     }
 
     //player lost the game, stops play
     function lose() {
         timer = 0;
-        var text = new PIXI.Text("Game Over! \n Press Enter to increase difficulty \n Press R to restart" , {font:"24px Arial", fill: "red", align: 'center'});
-        for (var i = stage.children.length - 1; i >= 0; i--) {
-            stage.removeChild(stage.children[i]);
+        if (!isPaused) {
+            var text = new PIXI.Text("Game Over! \n Press Enter to increase difficulty \n Press R to restart" , {font:"24px Arial", fill: "red", align: 'center'});
+            for (var i = stage.children.length - 1; i >= 0; i--) {
+                stage.removeChild(stage.children[i]);
+            }
+            stage.addChild(text);
+            isPaused = true;
         }
-        stage.addChild(text);
     }
 
     //wait for player to begin game
     function begin() {
-        var text = new PIXI.Text(" Press Enter to Begin \n Use arrow keys to move", {font:"30px Arial", fill: "white"});
-        stage.addChild(text);
+        if (!isPaused) {
+            var text = new PIXI.Text(" Press Enter to Begin \n Use arrow keys to move", {font:"30px Arial", fill: "white"});
+            stage.addChild(text);
+            isPaused = true;
+        }
     }
 
     //main animation loop
     function animate() {
         requestAnimationFrame(animate);
-        state();
+        state(isPaused);
         // Render our container
         r.render(stage);
     }
@@ -321,6 +333,10 @@ document.addEventListener('DOMContentLoaded', function() {
            }
         });
         return false;
+    }
+
+    function addText(message) {
+
     }
 
     // Returns a random integer between min (included) and max (included)
