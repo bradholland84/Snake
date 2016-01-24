@@ -246,7 +246,15 @@ document.addEventListener('DOMContentLoaded', function() {
     function lose() {
         timer = 0;
         if (!isPaused) {
-            var text = new PIXI.Text("Game Over! \n Press Enter to increase difficulty \n Press R to restart" , {font:"24px Arial", fill: "red", align: 'center'});
+            var highScore = localStorage.getItem("hiscore");
+            var currentScore = parseInt(document.getElementById('score').innerHTML);
+
+            if (highScore == null || highScore < snake.length - 1) {
+                localStorage.setItem('hiscore', currentScore);
+                document.getElementById('hiscore').innerHTML= "" + (currentScore);
+            }
+
+            var text = new PIXI.Text("\n\n\n\n    Game Over! \n    Press [Enter] to increase difficulty \n   Press [R] to restart" , {font:"24px Arial", fill: "red", align: 'center'});
             for (var i = stage.children.length - 1; i >= 0; i--) {
                 stage.removeChild(stage.children[i]);
             }
@@ -258,7 +266,11 @@ document.addEventListener('DOMContentLoaded', function() {
     //wait for player to begin game
     function begin() {
         if (!isPaused) {
-            var text = new PIXI.Text(" Press Enter to Begin \n Use arrow keys to move", {font:"30px Arial", fill: "white"});
+            var highScore = localStorage.getItem("hiscore");
+            if (highScore != null) {
+                document.getElementById('hiscore').innerHTML= "" + (highScore);
+            }
+            var text = new PIXI.Text("\n\n\n     Use arrow keys to move \n\n    Press [Enter] to Begin ", {font:"30px Arial", fill: "white", align: "center"});
             stage.addChild(text);
             isPaused = true;
         }

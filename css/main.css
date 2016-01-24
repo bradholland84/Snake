@@ -6,6 +6,63 @@ html {
 body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 18px;
+    background-color: lightcyan;
+}
+
+h2 {
+    font-size: 70px;
+    line-height: 100px;
+    color: #FFF;
+    font-weight: bold;
+    text-align: center;
+}
+
+h3 {
+    font-size: 40px;
+    line-height: 60px;
+    color: #FFF;
+    font-weight: bold;
+    text-align: center;
+}
+
+.title-container {
+    /*stitching*/
+    outline: 1px dashed #d1c86b;
+    outline-offset: -5px;
+
+    background-color: #654410;
+    height: 100px;
+    width: 400px;
+    margin: 20px auto;
+
+    /*shadow*/
+    -webkit-box-shadow: 2px 2px 2px #000;
+    -moz-box-shadow: 2px 2px 2px #000;
+    box-shadow: 2px 2px 2px #000;
+}
+
+.score-container {
+    /*stitching*/
+    outline: 1px dashed #d1c86b;
+    outline-offset: -5px;
+
+    background-color: #654410;
+    height: 60px;
+    width: 400px;
+    margin: 10px auto;
+
+    /*shadow*/
+    -webkit-box-shadow: 2px 2px 2px #000;
+    -moz-box-shadow: 2px 2px 2px #000;
+    box-shadow: 2px 2px 2px #000;
+}
+
+#score {
+    color: #ffdf4e;
+}
+
+#hiscore {
+    color: #FFF;
 }
 
 #game-canvas {
