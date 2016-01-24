@@ -9,5 +9,6 @@ body {
 }
 
 #game-canvas {
-    border: 1px solid #333;
+    margin: 0 auto;
+    width: 400px;
 }

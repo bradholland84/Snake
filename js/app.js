@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     r.backgroundColor = 0x061639;
 
     //adds canvas to HTML body
-    document.body.appendChild(r.view);
+    document.getElementById('game-canvas').appendChild(r.view);
 
     //Creates main stage for display objects
     var stage = new PIXI.Container();
