@@ -227,7 +227,7 @@ document.addEventListener('DOMContentLoaded', function() {
             //make the apple a different color
             var apple = map.tileSprites[applePoint.x][applePoint.y];
             var appleTexture = PIXI.loader.resources['img/apple.png'].texture;
-            apple.setTexture(appleTexture);
+            apple.texture = appleTexture;
 
             // Restrict game speed
             if (timer > 15) {
@@ -305,7 +305,7 @@ document.addEventListener('DOMContentLoaded', function() {
             snake.unshift(newHead);
             var headTexture = PIXI.loader.resources['img/head.png'].texture;
             //map.tileSprites[newHead.x][newHead.y].tint = 0xff00ff;
-            map.tileSprites[newHead.x][newHead.y].setTexture(headTexture);
+            map.tileSprites[newHead.x][newHead.y].texture = headTexture;
 
             //check to see if the snake ate an apple, if so: keep the last segment
             if (hitTestRectangle(map.tileSprites[newHead.x][newHead.y], apple)) {
@@ -316,7 +316,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 //remove tint of the last segment
                 //map.tileSprites[lastSegment.x][lastSegment.y].tint = 0xFFFFFF;
                 var grassTexture = PIXI.loader.resources['img/grass.png'].texture;
-                map.tileSprites[lastSegment.x][lastSegment.y].setTexture(grassTexture);
+                map.tileSprites[lastSegment.x][lastSegment.y].texture = grassTexture;
             }
 
             //now tint the snake segments
@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 //map.tileSprites[segment.x][segment.y].tint = 0xff00ff;
                 if (i > 0) {
                     var bodyTexture = PIXI.loader.resources['img/body.png'].texture;
-                    map.tileSprites[segment.x][segment.y].setTexture(bodyTexture);
+                    map.tileSprites[segment.x][segment.y].texture = bodyTexture;
                 }
                 i++;
             });
@@ -337,7 +337,7 @@ document.addEventListener('DOMContentLoaded', function() {
         //map.tileSprites[applePoint.x][applePoint.y].tint = 0xFFFFFF;
         //map.tileSprites[applePoint.x][applePoint.y].tint = 0xff00ff;
         var appleTexture = PIXI.loader.resources['img/apple.png'].texture;
-        map.tileSprites[applePoint.x][applePoint.y].setTexture(appleTexture);
+        map.tileSprites[applePoint.x][applePoint.y].texture = appleTexture;
         applePoint = new PIXI.Point(
             getRandomIntInclusive(0, 19),
             getRandomIntInclusive(0, 19)
