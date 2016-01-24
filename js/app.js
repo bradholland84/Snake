@@ -24,7 +24,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //put images into texture cache
     PIXI.loader
-        .add('img/square.png')
+        .add('img/grass.png')
+        .add('img/body.png')
+        .add('img/apple.png')
+        .add('img/head.png')
         .load(setupSprites);
 
     //makes random point on the map
@@ -46,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
         map.tileSprites = [];
         var x;
         var y;
-        var texture = PIXI.loader.resources['img/square.png'].texture;
+        var texture = PIXI.loader.resources['img/grass.png'].texture;
         for (x = 0; x < r.width / 20; x ++) {
             map.tileSprites.push([]);
             for (y = 0; y < r.height / 20; y ++) {
@@ -223,7 +226,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!isPaused) {
             //make the apple a different color
             var apple = map.tileSprites[applePoint.x][applePoint.y];
-            apple.tint =  0xffff1a;
+            var appleTexture = PIXI.loader.resources['img/apple.png'].texture;
+            apple.setTexture(appleTexture);
 
             // Restrict game speed
             if (timer > 15) {
@@ -287,7 +291,9 @@ document.addEventListener('DOMContentLoaded', function() {
             state = lose;
         } else {
             snake.unshift(newHead);
-            map.tileSprites[newHead.x][newHead.y].tint = 0xff00ff;
+            var headTexture = PIXI.loader.resources['img/head.png'].texture;
+            //map.tileSprites[newHead.x][newHead.y].tint = 0xff00ff;
+            map.tileSprites[newHead.x][newHead.y].setTexture(headTexture);
 
             //check to see if the snake ate an apple, if so: keep the last segment
             if (hitTestRectangle(map.tileSprites[newHead.x][newHead.y], apple)) {
@@ -296,21 +302,30 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 var lastSegment = snake.pop();
                 //remove tint of the last segment
-                map.tileSprites[lastSegment.x][lastSegment.y].tint = 0xFFFFFF;
+                //map.tileSprites[lastSegment.x][lastSegment.y].tint = 0xFFFFFF;
+                var grassTexture = PIXI.loader.resources['img/grass.png'].texture;
+                map.tileSprites[lastSegment.x][lastSegment.y].setTexture(grassTexture);
             }
 
             //now tint the snake segments
+            var i = 0;
             snake.forEach(function(segment) {
-                map.tileSprites[segment.x][segment.y].tint = 0xff00ff;
+                //map.tileSprites[segment.x][segment.y].tint = 0xff00ff;
+                if (i > 0) {
+                    var bodyTexture = PIXI.loader.resources['img/body.png'].texture;
+                    map.tileSprites[segment.x][segment.y].setTexture(bodyTexture);
+                }
+                i++;
             });
         }
     }
 
     //generates new apple in  random position
     function newApple() {
-        map.tileSprites[applePoint.x][applePoint.y].tint = 0xFFFFFF;
-        map.tileSprites[applePoint.x][applePoint.y].tint = 0xff00ff;
-
+        //map.tileSprites[applePoint.x][applePoint.y].tint = 0xFFFFFF;
+        //map.tileSprites[applePoint.x][applePoint.y].tint = 0xff00ff;
+        var appleTexture = PIXI.loader.resources['img/apple.png'].texture;
+        map.tileSprites[applePoint.x][applePoint.y].setTexture(appleTexture);
         applePoint = new PIXI.Point(
             getRandomIntInclusive(0, 19),
             getRandomIntInclusive(0, 19)
@@ -333,10 +348,6 @@ document.addEventListener('DOMContentLoaded', function() {
            }
         });
         return false;
-    }
-
-    function addText(message) {
-
     }
 
     // Returns a random integer between min (included) and max (included)
