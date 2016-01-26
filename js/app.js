@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
     //main sprite object that serves as player pointer
     var sprite;
     function setupSprites() {
-    isPaused = false;
+        isPaused = false;
         //adds tile sprites to stage
         timer = 0;
         snake = [{x: 10, y: 10}];
@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
     //main game logic
     function play() {
         if (!isPaused) {
-            //make the apple a different color
+            //re-texture the apple
             var apple = map.tileSprites[applePoint.x][applePoint.y];
             var appleTexture = PIXI.loader.resources['img/apple.png'].texture;
             apple.texture = appleTexture;
@@ -304,7 +304,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             snake.unshift(newHead);
             var headTexture = PIXI.loader.resources['img/head.png'].texture;
-            //map.tileSprites[newHead.x][newHead.y].tint = 0xff00ff;
             map.tileSprites[newHead.x][newHead.y].texture = headTexture;
 
             //check to see if the snake ate an apple, if so: keep the last segment
@@ -313,16 +312,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 newApple();
             } else {
                 var lastSegment = snake.pop();
-                //remove tint of the last segment
-                //map.tileSprites[lastSegment.x][lastSegment.y].tint = 0xFFFFFF;
+                //re-texture removed segment
                 var grassTexture = PIXI.loader.resources['img/grass.png'].texture;
                 map.tileSprites[lastSegment.x][lastSegment.y].texture = grassTexture;
             }
 
-            //now tint the snake segments
+            //now re-texture the snake segments
             var i = 0;
             snake.forEach(function(segment) {
-                //map.tileSprites[segment.x][segment.y].tint = 0xff00ff;
                 if (i > 0) {
                     var bodyTexture = PIXI.loader.resources['img/body.png'].texture;
                     map.tileSprites[segment.x][segment.y].texture = bodyTexture;
@@ -334,8 +331,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //generates new apple in  random position
     function newApple() {
-        //map.tileSprites[applePoint.x][applePoint.y].tint = 0xFFFFFF;
-        //map.tileSprites[applePoint.x][applePoint.y].tint = 0xff00ff;
         var appleTexture = PIXI.loader.resources['img/apple.png'].texture;
         map.tileSprites[applePoint.x][applePoint.y].texture = appleTexture;
         applePoint = new PIXI.Point(
@@ -354,10 +349,10 @@ document.addEventListener('DOMContentLoaded', function() {
     //check if the snake is trying to eat itself
     function ateSelf(head) {
         snake.forEach(function(segment) {
-           if (head.x == segment.x && head.y == segment.y) {
-               state = lose;
-               return true;
-           }
+            if (head.x == segment.x && head.y == segment.y) {
+                state = lose;
+                return true;
+            }
         });
         return false;
     }
